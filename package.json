@@ -1,8 +1,9 @@
 {
   "name": "react-fipc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "simple implementation of dependency injection in react",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ParomovEvg/react-fipc.git"
@@ -22,13 +23,18 @@
   "homepage": "https://github.com/ParomovEvg/react-fipc#readme",
   "scripts": {
     "build": "tsc",
-    "docs": "typedoc --out documentation/ src/ --theme minimal",
+    "postbuild": "node scripts/postbuild.js",
+    "eslint": "npx npx eslint --ext .ts src",
     "test": "jest",
     "test-watch": "jest --watch",
+    "typecheck": "tsc --noEmit --skipLibCheck",
     "release": "standard-version",
     "release:patch": "npm run release -- --release-as patch",
     "release:minor": "npm run release -- --release-as minor",
-    "release:major": "npm run release -- --release-as major"
+    "release:major": "npm run release -- --release-as major",
+    "test:ci": "npm run test && npm run coveralls",
+    "coveralls": "cat coverage/lcov.info | coveralls",
+    "publish": "npm run build && npm publish ./lib"
   },
   "jest": {
     "transform": {
@@ -42,9 +48,27 @@
     ],
     "collectCoverage": true
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run typecheck"
+    }
+  },
+  "lint-staged": {
+    "*.{html,md,less,json}": [
+      "prettier --write"
+    ],
+    "*.ts": "eslint --fix --config .eslintrc"
+  },
   "devDependencies": {
     "@types/jest": "^25.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "coveralls": "^3.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "husky": "^4.2.5",
     "jest": "^25.4.0",
+    "lint-staged": "^10.1.7",
     "prettier": "^2.0.5",
     "standard-version": "^7.1.0",
     "ts-jest": "^25.4.0",
