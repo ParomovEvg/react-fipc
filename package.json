@@ -1,0 +1,48 @@
+{
+  "name": "react-fipc",
+  "version": "0.1.0",
+  "description": "simple implementation of dependency injection in react",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ParomovEvg/react-fipc.git"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "di",
+    "dependency-injection",
+    "currying"
+  ],
+  "author": "Evgeny Paromov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ParomovEvg/react-fipc/issues"
+  },
+  "homepage": "https://github.com/ParomovEvg/react-fipc#readme",
+  "scripts": {
+    "build": "tsc",
+    "docs": "typedoc --out documentation/ src/ --theme minimal",
+    "test": "jest",
+    "test-watch": "jest --watch"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testRegex": "src/.+\\.test\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "jest": "^25.4.0",
+    "prettier": "^2.0.5",
+    "ts-jest": "^25.4.0",
+    "typescript": "^3.8.3"
+  }
+}
