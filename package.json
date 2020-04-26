@@ -1,6 +1,6 @@
 {
   "name": "react-fipc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "simple implementation of dependency injection in react",
   "main": "index.js",
   "repository": {
@@ -24,7 +24,11 @@
     "build": "tsc",
     "docs": "typedoc --out documentation/ src/ --theme minimal",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "release": "standard-version",
+    "release:patch": "npm run release -- --release-as patch",
+    "release:minor": "npm run release -- --release-as minor",
+    "release:major": "npm run release -- --release-as major"
   },
   "jest": {
     "transform": {
@@ -42,6 +46,7 @@
     "@types/jest": "^25.2.1",
     "jest": "^25.4.0",
     "prettier": "^2.0.5",
+    "standard-version": "^7.1.0",
     "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   }
