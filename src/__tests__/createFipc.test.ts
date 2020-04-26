@@ -1,4 +1,4 @@
-import { createFipc } from "./createFipc";
+import { createFipc } from "../createFipc";
 
 describe("CreateFipc", () => {
   const Test = (props: { id: string }): number => {

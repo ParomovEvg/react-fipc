@@ -1,7 +1,8 @@
-import { createFipc } from "./createFipc";
-import { saveNewDisplayName } from "./saveNewDisplayName";
+import { createFipc } from "../createFipc";
+import { saveNewDisplayName } from "../saveNewDisplayName";
 
 describe("saveNewDisplayName test", () => {
+
   it("Should save new display name of fipc", () => {
     const Button = (props: { color: "red" | "blue" }) => {
       return `Button ${props.color}`;
