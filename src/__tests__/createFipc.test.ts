@@ -10,10 +10,22 @@ describe("CreateFipc", () => {
     expect(fipc({ $: true, id: "123" })).toBe(1);
   });
 
+  it("Should unwrap fipc", () => {
+    const fipc = createFipc(Test)
+    expect(fipc({$: false, id:"123"})({})).toBe(1)
+  })
+
   it("Should save displayName", () => {
     const fipc = createFipc(Test);
     expect(fipc.displayName).toBe("Test");
   });
+
+  it( "Should save displayName if unwrap", () => {
+    const fipc = createFipc(Test)
+    expect(
+        fipc({id:"123"})({})({})({$:false}).displayName
+    ).toBe("Test")
+  })
 
   describe("Fipc test", () => {
     type Props = {
@@ -35,15 +47,27 @@ describe("CreateFipc", () => {
       jest.clearAllMocks();
     });
 
-    it("Should call component if there is $ prop", () => {
+    it("Should call component if  $ prop = true", () => {
       const fipc = createFipc(component);
       expect(fipc({ $: true, ...props })).toEqual(props);
       expect(component).toHaveBeenCalledWith(props);
     });
 
-    it("Should call component if fipc was partially applied ", () => {
+    it("Should unwrap component if $ prop = false", () => {
+      const fipc = createFipc(component)
+      expect(fipc({$:false, ...props})({})).toEqual(props)
+      expect(component).toHaveBeenCalledWith(props)
+    })
+
+    it("Should call component if fipc was partially applied ($ = true)", () => {
       const fipc = createFipc(component);
       const result = fipc({ name: "asdaf" })({ id: 123 })({ $: true });
+      expect(result).toEqual({ name: "asdaf", id: 123 });
+    });
+
+    it("Should call component if fipc was partially applied ($ = false)", () => {
+      const fipc = createFipc(component);
+      const result = fipc({ name: "asdaf" })({ id: 123 })({ $: false })({});
       expect(result).toEqual({ name: "asdaf", id: 123 });
     });
 
@@ -59,7 +83,6 @@ describe("CreateFipc", () => {
       const fipc = createFipc(component);
       expect(fipc({ $: true, ...props })).not.toHaveProperty("$");
     });
-
 
     it("Should work independently", () => {
       const Button = (props: {color:'red'|'blue'}) => {
