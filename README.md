@@ -18,39 +18,42 @@ This package adds a `createFipc` function that calls to create a Fipc from any o
 
 ### Easy component composition
 
-Fipc definition
+####Fipc definition
 
 ```ts
 import { createFipc, saveNewDisplayName } from "react-fipc";
 import { Button } from "./Button";
 
-const ButtonFipc = createFipc(Button);
+const Button$ = createFipc(Button);
 
-export const BlueButton = ButtonFipc({ color: "blue" });
-export const RedButton = ButtonFipc({ color: "red" });
+export const BlueButton$ = Button$({ color: "blue" });
+export const RedButton$ = Button$({ color: "red" });
 
-export const BlueOutlinedButton = BlueButton({ type: 'outlined' });
-export const RedOutlinedButton = RedButton({ type: 'outlined' });
+export const BlueOutlinedButton$ = BlueButton$({ type: "outlined" });
+export const RedOutlinedButton$ = RedButton$({ type: "outlined" });
 
 // This function is only needed to correctly display Fipc in React Dev Tools
 saveNewDisplayName({
-  BlueOutlinedButton,
-  RedOutlinedButton
-  BlueButton,
-  RedButton,
+  BlueOutlinedButton$,
+  RedOutlinedButton$,
+  BlueButton$,
+  RedButton$,
 });
 ```
 
 By default, the Fipc `displayName` is equal to the name of the base component.
-If you need to change it, react-fipc provides a `saveNewDisplayName` function to make changing the displayName easier``
+If you need to change it, react-fipc provides a `saveNewDisplayName` function to make changing the displayName easier
 
-Fipc usage
+#### Fipc usage
 
+There are two ways to use fipc in your component.
+
+The first option is to call fipc from your component with prop \$.
 Prop `$` allows the Fipc to understand that you need to stop currying component
 
 ```tsx
 import React from "react";
-import { BlueOutlinedButton } from "./buttons";
+import { BlueOutlinedButton$ } from "./buttons";
 import { Button } from "./button";
 
 export const Component = () => {
@@ -59,7 +62,32 @@ export const Component = () => {
       <Button color={"blue"} type={"outlined"}>
         Hello
       </Button>
-      <BlueOutlinedButton $>Hello</BlueOutlinedButton>
+      <BlueOutlinedButton$ $>Hello</BlueOutlinedButton$>
+    </div>
+  );
+};
+```
+
+The second option is unwrap fipc before use.
+In this case, your components don't know about fipc,
+but you cannot continue currying this fipc
+
+Call fipc with {\$:false} to unwrap fipc
+
+```tsx
+import React from "react";
+import { BlueOutlinedButton$ } from "./buttons";
+import { Button } from "./button";
+
+const BlueOutlinedButton = BlueOutlinedButton$({ $: false });
+
+export const Component = () => {
+  return (
+    <div>
+      <Button color={"blue"} type={"outlined"}>
+        Hello
+      </Button>
+      <BlueOutlinedButton>Hello</BlueOutlinedButton>
     </div>
   );
 };
@@ -67,46 +95,49 @@ export const Component = () => {
 
 ### Easy injecting of api
 
-Fipc definition
+#### Fipc definition
 
 ```tsx
 import React from "react";
 import { createFipc, WithApi } from "react-fipc";
 import { Button } from "./button";
+import { SendInterface } from "api";
 
-interface ButtonIdProps extends WithApi<{ send: (id: number) => void }> {
+interface ButtonIdProps extends WithApi<{ send: SendInterface }> {
   id: number;
   className?: string;
 }
-export const ButtonIdComponent = createFipc(
-  ({ id, $api: { send } }: ButtonIdProps) => {
-    return (
-      <Button
-        onClick={() => {
-          send(id);
-        }}
-      >
-        {id}
-      </Button>
-    );
-  }
-);
+const ButtonIdComponent: React.FC<ButtonIdProps> = ({ id, $api: { send } }) => {
+  return (
+    <Button
+      onClick={() => {
+        send(id);
+      }}
+    >
+      {id}
+    </Button>
+  );
+};
+export const ButtonIdComponent$ = createFipc(ButtonIdComponent);
 ```
 
-Fipc api injection
+#### Fipc api injection
 
 ```tsx
 import { send } from "api";
-import { ButtonIdComponent } from "./component";
+import { ButtonIdComponent$ } from "./component";
 import { saveNewDisplayName } from "react-fipc";
 
-export const ButtonId = ButtonIdComponent({ $api: { send } });
+// prop $:false unwrap fipc
+export const ButtonId = ButtonIdComponent$({ $api: { send }, $: false });
 saveNewDisplayName({
   ButtonId,
 });
 ```
 
-Fipc usage
+#### Fipc usage
+
+You can use unwrapped fipc like a simple component
 
 ```tsx
 import React from "react";
@@ -115,21 +146,23 @@ import { ButtonId } from "./button-id";
 export const Component = () => {
   return (
     <div>
-      <ButtonId id={123} $ />
+      <ButtonId id={123} />
     </div>
   );
 };
 ```
 
+#### Fipc test
+
 Fipc makes your components easier to test
 
 ```tsx
-import { ButtonIdComponent } from "./../component";
+import { ButtonIdComponent$ } from "./../component";
 import { shallow } from 'enzyme';
 
 describe("ButtonId test", () => {
   const send = jest.fn();
-  const ButtonId = ButtonIdComponent({ $api: { send } });
+  const ButtonId = ButtonIdComponent$({ $api: { send } });
 
   it("Should call api", () => {
     const wrapper = shallow(<ButtonId id={1} />);
