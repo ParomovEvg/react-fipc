@@ -1,49 +1,49 @@
-import { Fipc, UnwrappedFipc, WithDisplayName } from "./Fipc";
-export function createFipc<ComponentProps extends {}, Result>(
+import { Fipc, FipcPropsCarry, FipcPropsRender, WithDisplayName } from "./Fipc";
+export function createFipc<ComponentProps, Result>(
   component: (props: ComponentProps) => Result
 ): Fipc<ComponentProps, Result> {
-  const res = function fipc(props) {
-    if (props.$ === true) {
-      const copy = { ...props };
-      delete copy.$;
-      return component(copy as ComponentProps);
+  const name = component.name;
+  const fipc = (props: Partial<FipcPropsCarry & FipcPropsRender>) => {
+    const { $render, $carry, ...componentProps  } = props;
+    if ($render) {
+      return component(componentProps as ComponentProps);
     }
-    if (props.$ === false) {
-      const innerComponent: UnwrappedFipc<
-        Omit<ComponentProps, keyof typeof props>,
-        Result
-      > = (componentProps) => {
-        const copy = { ...props, ...componentProps };
-        delete copy.$;
-        return component(copy as ComponentProps);
+    if ($carry !== true) {
+      const unwrappedFipc: WithDisplayName = (innerProps: any) => {
+        return component({ ...componentProps, ...innerProps });
       };
-      innerComponent.displayName = component.name;
-      return innerComponent;
-    } else {
-      const innerFipc: WithDisplayName = (innerProps: any) => {
-        if (innerProps.$ === true) {
-          const copy = { ...props, ...innerProps };
-          delete copy.$;
-          return component(copy as ComponentProps);
-        } else if (innerProps.$ === false) {
-          const innerComponent: UnwrappedFipc<
-            Omit<ComponentProps, keyof typeof props>,
-            Result
-          > = (componentProps) => {
-            const copy = { ...props, ...innerProps, ...componentProps };
-            delete copy.$;
-            return component(copy as ComponentProps);
-          };
-          innerComponent.displayName = component.name;
-          return innerComponent;
-        } else {
-          return fipc({ ...props, ...innerProps });
-        }
-      };
-      innerFipc.displayName = component.name;
-      return innerFipc;
+      unwrappedFipc.displayName = name;
+      return unwrappedFipc;
     }
-  } as Fipc<ComponentProps, Result>;
-  res.displayName = component.name;
-  return res;
+
+    const innerFipc: WithDisplayName = (
+      innerFipcProps: Partial<FipcPropsCarry & FipcPropsRender>
+    ) => {
+      const {
+        $render: $renderInner,
+        $carry: $carryInner,
+        ...innerComponentProps
+      } = {
+        ...componentProps,
+        ...innerFipcProps,
+      };
+      if ($renderInner) {
+        return component(innerComponentProps as ComponentProps);
+      }
+      if (!$carryInner) {
+        const unwrappedFipc: WithDisplayName = (innerProps: any) => {
+          return component({ ...innerComponentProps, ...innerProps });
+        };
+        unwrappedFipc.displayName = name;
+        return unwrappedFipc;
+      }
+      return fipc({...componentProps, ...innerFipcProps});
+    };
+
+    innerFipc.displayName = name;
+    return innerFipc;
+  };
+
+  fipc.displayName = name;
+  return fipc as Fipc<ComponentProps, Result>;
 }

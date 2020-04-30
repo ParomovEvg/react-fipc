@@ -1,28 +1,29 @@
 export type WithDisplayName = {
   displayName?: string;
 } & Function;
-export type FipcProps = {
-  $: boolean;
+
+export type UnwrappedFipc<P, R> = (props: P) => R;
+
+export type FipcPropsCarry = {
+  $carry: true;
 };
-export type FipcRenderProps = {
-  $: true;
-};
-export type FipcUnwrapProps = {
-  $: false;
+
+export type FipcPropsRender = {
+  $render: true;
 };
 
 export type ResProps<
-  P extends FipcProps,
-  T extends Partial<FipcProps>
-> = T extends FipcRenderProps ? P : T;
+  Props,
+  PartProps extends Partial<Props & FipcPropsRender>
+> = PartProps extends FipcPropsRender ? Props & FipcPropsRender : PartProps ;
 
-export type UnwrappedFipc<P, R> = ((props: P) => R) & WithDisplayName;
-
-export type Fipc<P, R> = (<PartProp extends Partial<P & FipcProps>>(
-  props: ResProps<P & FipcProps, PartProp>
-) => PartProp extends FipcRenderProps
-  ? R
-  : PartProp extends FipcUnwrapProps
-  ? UnwrappedFipc<Omit<P, keyof PartProp>, R>
-  : Fipc<Omit<P, keyof PartProp> & FipcProps, R>) &
+export type Fipc<Props, Res> = (<
+  PartProps extends Partial<Props & FipcPropsCarry & FipcPropsRender>
+>(
+  props: ResProps<Props, PartProps>
+) => PartProps extends FipcPropsRender
+  ? Res
+  : PartProps extends FipcPropsCarry
+  ? Fipc<Omit<Props, keyof PartProps>, Res> & WithDisplayName
+  : UnwrappedFipc<Omit<Props, keyof PartProps>, Res> & WithDisplayName) &
   WithDisplayName;
