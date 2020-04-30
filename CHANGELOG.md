@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/ParomovEvg/react-fipc/compare/v0.2.0...v0.3.0) (2020-04-30)
+
+### ⚠ BREAKING CHANGES
+
+- **flags:** Renamed flags
+
+### Features
+
+- **flags:** change Flag Names, and defalut effects ([398810e](https://github.com/ParomovEvg/react-fipc/commit/398810ec0fd7afee0a10d030e8e69c6437665dc7))
+
 ## [0.2.0](https://github.com/ParomovEvg/react-fipc/compare/v0.1.4...v0.2.0) (2020-04-27)
 
 ### Features
