@@ -1,3 +1,2 @@
-export * from "./saveNewDisplayName";
-export * from "./With";
-export * from "./createFipc";
+export * from './saveNewDisplayName';
+export * from './createFipc';

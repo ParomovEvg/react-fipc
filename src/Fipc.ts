@@ -15,7 +15,7 @@ export type FipcPropsRender = {
 export type ResProps<
   Props,
   PartProps extends Partial<Props & FipcPropsRender>
-> = PartProps extends FipcPropsRender ? Props & FipcPropsRender : PartProps ;
+> = PartProps extends FipcPropsRender ? Props & FipcPropsRender : PartProps;
 
 export type Fipc<Props, Res> = (<
   PartProps extends Partial<Props & FipcPropsCarry & FipcPropsRender>

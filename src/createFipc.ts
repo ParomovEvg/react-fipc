@@ -1,10 +1,10 @@
-import { Fipc, FipcPropsCarry, FipcPropsRender, WithDisplayName } from "./Fipc";
+import { Fipc, FipcPropsCarry, FipcPropsRender, WithDisplayName } from './Fipc';
 export function createFipc<ComponentProps, Result>(
   component: (props: ComponentProps) => Result
 ): Fipc<ComponentProps, Result> {
   const name = component.name;
   const fipc = (props: Partial<FipcPropsCarry & FipcPropsRender>) => {
-    const { $render, $carry, ...componentProps  } = props;
+    const { $render, $carry, ...componentProps } = props;
     if ($render) {
       return component(componentProps as ComponentProps);
     }
@@ -37,7 +37,7 @@ export function createFipc<ComponentProps, Result>(
         unwrappedFipc.displayName = name;
         return unwrappedFipc;
       }
-      return fipc({...componentProps, ...innerFipcProps});
+      return fipc({ ...componentProps, ...innerFipcProps });
     };
 
     innerFipc.displayName = name;
